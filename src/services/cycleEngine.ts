@@ -44,7 +44,6 @@ export class CyclePredictionEngine {
     });
 
     if (cycleLengths.length > 0) {
-      // Weighted average - more recent cycles get higher weight
       const weighted = cycleLengths.reduce((sum, len, i) => {
         const weight = (i + 1) / cycleLengths.length;
         return sum + len * weight;
@@ -68,7 +67,6 @@ export class CyclePredictionEngine {
     if (count >= 3 && count < 6) return 72;
     if (count >= 6 && count < 12) return 82;
 
-    // Reduce confidence for irregular cycles
     const stats = this.calculateStats();
     if (stats.cycle_regularity === 'irregular') return Math.min(65, 82);
     if (stats.cycle_regularity === 'slightly_irregular') return Math.min(75, 82);
@@ -136,25 +134,22 @@ export class CyclePredictionEngine {
       const lastStart = parseISO(lastCycle.start_date);
       nextPeriodStart = addDays(lastStart, this.averageCycleLength);
 
-      // If predicted date is in the past, recalculate from today
       if (isBefore(nextPeriodStart, today)) {
         const daysSinceLastPeriod = differenceInDays(today, lastStart);
         const cyclesElapsed = Math.floor(daysSinceLastPeriod / this.averageCycleLength);
         nextPeriodStart = addDays(lastStart, (cyclesElapsed + 1) * this.averageCycleLength);
       }
     } else {
-      // No data - predict 28 days from today
       nextPeriodStart = addDays(today, 28);
     }
 
     const nextPeriodEnd = addDays(nextPeriodStart, this.averagePeriodLength - 1);
-    const ovulationDate = addDays(nextPeriodStart, -(14)); // ~14 days before next period
+    const ovulationDate = addDays(nextPeriodStart, -14);
     const fertileWindowStart = addDays(ovulationDate, -5);
     const fertileWindowEnd = addDays(ovulationDate, 1);
     const pmsStart = addDays(nextPeriodStart, -5);
     const daysUntilPeriod = Math.max(0, differenceInDays(nextPeriodStart, today));
 
-    // Determine current phase
     const phase = this.getCurrentPhase(today, nextPeriodStart);
 
     return {
@@ -197,7 +192,6 @@ export class CyclePredictionEngine {
       const offset = m * this.averageCycleLength;
       const periodStart = addDays(parseISO(prediction.next_period_start), offset);
 
-      // Period days
       for (let d = 0; d < this.averagePeriodLength; d++) {
         days.push({
           date: format(addDays(periodStart, d), 'yyyy-MM-dd'),
@@ -206,7 +200,6 @@ export class CyclePredictionEngine {
         });
       }
 
-      // PMS days
       const pmsStart = addDays(periodStart, -5);
       for (let d = 0; d < 5; d++) {
         days.push({
@@ -216,8 +209,7 @@ export class CyclePredictionEngine {
         });
       }
 
-      // Fertile window
-      const ovulation = addDays(periodStart, -(14 - offset * 0)); // relative to this cycle
+      const ovulation = addDays(periodStart, -14);
       const fertileStart = addDays(ovulation, -5);
       for (let d = 0; d < 7; d++) {
         days.push({
@@ -240,15 +232,15 @@ export function getCycleDay(lastPeriodStart: string): number {
 export function getPhaseMessage(phase: CyclePhase, daysUntilPeriod: number): string {
   switch (phase) {
     case 'menstrual':
-      return 'Be gentle with yourself today 🌸';
+      return 'Be gentle with yourself today';
     case 'follicular':
-      return 'Your energy is rising ✨';
+      return 'Your energy is rising';
     case 'ovulation':
-      return 'Peak vitality — you\'re glowing 🌟';
+      return "Peak vitality - you're glowing";
     case 'luteal':
-      return 'Time to slow down and reflect 🌙';
+      return 'Time to slow down and reflect';
     case 'pms':
-      return `Period in ~${daysUntilPeriod} day${daysUntilPeriod !== 1 ? 's' : ''}. Be kind to yourself 💜`;
+      return `Period in ~${daysUntilPeriod} day${daysUntilPeriod !== 1 ? 's' : ''}. Be kind to yourself`;
     default:
       return 'Track your cycle to unlock insights';
   }

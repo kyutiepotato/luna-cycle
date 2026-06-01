@@ -3,7 +3,6 @@ import { StatusBar } from 'expo-status-bar';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import * as SplashScreen from 'expo-splash-screen';
-import * as Font from 'expo-font';
 import { NavigationContainer } from '@react-navigation/native';
 import { AuthProvider } from './src/context/AuthContext';
 import { CycleProvider } from './src/context/CycleContext';
@@ -11,34 +10,37 @@ import { ThemeProvider } from './src/context/ThemeContext';
 import { NotificationProvider } from './src/context/NotificationContext';
 import RootNavigator from './src/navigation/RootNavigator';
 import { navigationTheme } from './src/constants/theme';
+import {
+  useFonts,
+  Fraunces_300Light,
+  Fraunces_400Regular,
+  Fraunces_600SemiBold,
+} from '@expo-google-fonts/fraunces';
+import {
+  DMSans_400Regular,
+  DMSans_500Medium,
+  DMSans_700Bold,
+} from '@expo-google-fonts/dm-sans';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
-  const [appReady, setAppReady] = useState(false);
+  const [fontsLoaded, fontError] = useFonts({
+    'Fraunces-Light':    Fraunces_300Light,
+    'Fraunces-Regular':  Fraunces_400Regular,
+    'Fraunces-SemiBold': Fraunces_600SemiBold,
+    'DM-Sans-Regular':   DMSans_400Regular,
+    'DM-Sans-Medium':    DMSans_500Medium,
+    'DM-Sans-Bold':      DMSans_700Bold,
+  });
 
   useEffect(() => {
-    async function prepare() {
-      try {
-        await Font.loadAsync({
-          'Fraunces-Light': require('./src/assets/fonts/Fraunces-Light.ttf'),
-          'Fraunces-Regular': require('./src/assets/fonts/Fraunces-Regular.ttf'),
-          'Fraunces-SemiBold': require('./src/assets/fonts/Fraunces-SemiBold.ttf'),
-          'DM-Sans-Regular': require('./src/assets/fonts/DMSans-Regular.ttf'),
-          'DM-Sans-Medium': require('./src/assets/fonts/DMSans-Medium.ttf'),
-          'DM-Sans-Bold': require('./src/assets/fonts/DMSans-Bold.ttf'),
-        });
-      } catch (e) {
-        console.warn('Font loading failed, using system fonts:', e);
-      } finally {
-        setAppReady(true);
-        await SplashScreen.hideAsync();
-      }
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
     }
-    prepare();
-  }, []);
+  }, [fontsLoaded, fontError]);
 
-  if (!appReady) return null;
+  if (!fontsLoaded && !fontError) return null;
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

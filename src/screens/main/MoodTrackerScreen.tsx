@@ -10,6 +10,85 @@ import { Screen } from '../../components/common/Screen';
 import { Button } from '../../components/common/UIComponents';
 import { COLORS, FONTS, FONT_SIZES, SPACING, RADIUS, MOODS_CONFIG } from '../../constants/theme';
 import { MoodType } from '../../types';
+import Svg, { Path, Circle, Ellipse, Line, Rect, Polyline } from 'react-native-svg';
+
+// ─── SVG Icons ─────────────────────────────────────────────────────────────────
+
+/** Left arrow — back button */
+function IconArrowLeft({ size = 24, color = '#D97706' }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M19 12H5" stroke={color} strokeWidth="2" strokeLinecap="round" />
+      <Path d="M12 5l-7 7 7 7" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+/** Sleeping face — energy level 1 */
+function IconSleeping({ size = 26, active = false }: { size?: number; active?: boolean }) {
+  const c = active ? '#FB923C' : '#C084A0';
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="12" cy="12" r="9" fill={c} opacity="0.15" stroke={c} strokeWidth="1.5" />
+      <Line x1="8" y1="10" x2="10" y2="10" stroke={c} strokeWidth="1.5" strokeLinecap="round" />
+      <Line x1="14" y1="10" x2="16" y2="10" stroke={c} strokeWidth="1.5" strokeLinecap="round" />
+      <Path d="M9 15 Q12 14 15 15" stroke={c} strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      <Path d="M14 7 L16 7 L14 9 L16 9" stroke={c} strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </Svg>
+  );
+}
+
+/** Sad face — energy level 2 */
+function IconSad({ size = 26, active = false }: { size?: number; active?: boolean }) {
+  const c = active ? '#FB923C' : '#C084A0';
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="12" cy="12" r="9" fill={c} opacity="0.15" stroke={c} strokeWidth="1.5" />
+      <Circle cx="9" cy="10.5" r="1" fill={c} />
+      <Circle cx="15" cy="10.5" r="1" fill={c} />
+      <Path d="M8.5 16 Q12 13 15.5 16" stroke={c} strokeWidth="1.5" strokeLinecap="round" fill="none" />
+    </Svg>
+  );
+}
+
+/** Neutral face — energy level 3 */
+function IconNeutral({ size = 26, active = false }: { size?: number; active?: boolean }) {
+  const c = active ? '#FB923C' : '#C084A0';
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="12" cy="12" r="9" fill={c} opacity="0.15" stroke={c} strokeWidth="1.5" />
+      <Circle cx="9" cy="10.5" r="1" fill={c} />
+      <Circle cx="15" cy="10.5" r="1" fill={c} />
+      <Line x1="9" y1="15.5" x2="15" y2="15.5" stroke={c} strokeWidth="1.5" strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+/** Slight smile — energy level 4 */
+function IconSlightSmile({ size = 26, active = false }: { size?: number; active?: boolean }) {
+  const c = active ? '#FB923C' : '#C084A0';
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="12" cy="12" r="9" fill={c} opacity="0.15" stroke={c} strokeWidth="1.5" />
+      <Circle cx="9" cy="10.5" r="1" fill={c} />
+      <Circle cx="15" cy="10.5" r="1" fill={c} />
+      <Path d="M9 14.5 Q12 17 15 14.5" stroke={c} strokeWidth="1.5" strokeLinecap="round" fill="none" />
+    </Svg>
+  );
+}
+
+/** Lightning bolt — energy level 5 */
+function IconBolt({ size = 26, active = false }: { size?: number; active?: boolean }) {
+  const c = active ? '#FB923C' : '#C084A0';
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="12" cy="12" r="9" fill={c} opacity="0.15" stroke={c} strokeWidth="1.5" />
+      <Path d="M13 4L7 13h6l-2 7 8-10h-6l2-6z" fill={c} />
+    </Svg>
+  );
+}
+
+// ─── Main Screen ───────────────────────────────────────────────────────────────
 
 export default function MoodTrackerScreen() {
   const navigation = useNavigation();
@@ -48,13 +127,19 @@ export default function MoodTrackerScreen() {
     }
   };
 
-  const energyLabels = ['😴', '😕', '😐', '🙂', '⚡'];
+  const energyIcons = [
+    (active: boolean) => <IconSleeping size={26} active={active} />,
+    (active: boolean) => <IconSad size={26} active={active} />,
+    (active: boolean) => <IconNeutral size={26} active={active} />,
+    (active: boolean) => <IconSlightSmile size={26} active={active} />,
+    (active: boolean) => <IconBolt size={26} active={active} />,
+  ];
 
   return (
     <Screen scroll padding={false} style={{ backgroundColor: colors.background }}>
       <LinearGradient colors={['#FEF9C3', colors.background]} style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={styles.backArrow}>←</Text>
+          <IconArrowLeft size={24} color="#D97706" />
         </Pressable>
         <Text style={[styles.headerTitle, { color: colors.text.primary }]}>How are you feeling?</Text>
         <Text style={[styles.headerDate, { color: colors.text.secondary }]}>
@@ -98,7 +183,7 @@ export default function MoodTrackerScreen() {
         <View style={[styles.energyCard, { backgroundColor: colors.surfaceTertiary }]}>
           <Text style={[styles.energyTitle, { color: colors.text.primary }]}>Energy level today</Text>
           <View style={styles.energyRow}>
-            {energyLabels.map((emoji, i) => (
+            {energyIcons.map((renderIcon, i) => (
               <Pressable
                 key={i}
                 onPress={() => {
@@ -114,9 +199,9 @@ export default function MoodTrackerScreen() {
                   },
                 ]}
               >
-                <Text style={[styles.energyEmoji, { fontSize: energy === i + 1 ? 30 : 24 }]}>
-                  {emoji}
-                </Text>
+                <View style={{ transform: [{ scale: energy === i + 1 ? 1.2 : 1 }] }}>
+                  {renderIcon(energy === i + 1)}
+                </View>
               </Pressable>
             ))}
           </View>

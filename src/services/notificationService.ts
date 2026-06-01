@@ -1,5 +1,4 @@
 import * as Notifications from 'expo-notifications';
-import * as Device from 'expo-constants';
 import { Platform } from 'react-native';
 import { addDays, parseISO, format, setHours, setMinutes } from 'date-fns';
 import { CyclePrediction, NotificationSettings } from '../types';
@@ -8,7 +7,7 @@ import { CyclePrediction, NotificationSettings } from '../types';
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
-    shouldPlaySound: false, // Discreet
+    shouldPlaySound: false,
     shouldSetBadge: false,
   }),
 });
@@ -40,8 +39,8 @@ export const notificationService = {
       content: {
         title: 'Luna',
         body: daysBefore === 1
-          ? 'Your period may start tomorrow. Take care of yourself 🌸'
-          : `Your period is expected in ${daysBefore} days`,
+          ? 'Your period may start tomorrow. Take care of yourself.'
+          : `Your period is expected in ${daysBefore} days.`,
         data: { type: 'period_reminder' },
       },
       trigger: {
@@ -59,7 +58,7 @@ export const notificationService = {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Luna',
-        body: 'Your fertile window begins tomorrow ✨',
+        body: 'Your fertile window begins tomorrow.',
         data: { type: 'ovulation_reminder' },
       },
       trigger: {
@@ -74,7 +73,7 @@ export const notificationService = {
     await Notifications.scheduleNotificationAsync({
       content: {
         title: 'Luna',
-        body: 'How are you feeling today? Take a moment to log. 💜',
+        body: 'How are you feeling today? Take a moment to log.',
         data: { type: 'daily_log' },
       },
       trigger: {

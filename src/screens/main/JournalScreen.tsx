@@ -10,6 +10,31 @@ import { Screen } from '../../components/common/Screen';
 import { Button, EmptyState } from '../../components/common/UIComponents';
 import { COLORS, FONTS, FONT_SIZES, SPACING, RADIUS, SHADOWS, MOODS_CONFIG } from '../../constants/theme';
 import { JournalEntry, MoodType } from '../../types';
+import Svg, { Path, Line, Rect, Circle } from 'react-native-svg';
+
+// ─── SVG Icons ─────────────────────────────────────────────────────────────────
+
+/** Left arrow — back button */
+function IconArrowLeft({ size = 24, color = '#0284C7' }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M19 12H5" stroke={color} strokeWidth="2" strokeLinecap="round" />
+      <Path d="M12 5l-7 7 7 7" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+/** Open book — empty state */
+function IconBook({ size = 48, color = '#C084A0' }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M4 4h7a4 4 0 0 1 4 4v12a3 3 0 0 0-3-3H4V4z"
+        stroke={color} strokeWidth="1.5" fill="none" strokeLinejoin="round" />
+      <Path d="M20 4h-7a4 4 0 0 0-4 4v12a3 3 0 0 1 3-3h8V4z"
+        stroke={color} strokeWidth="1.5" fill="none" strokeLinejoin="round" />
+    </Svg>
+  );
+}
 
 // ─── Journal List Screen ──────────────────────────────────────────────────────
 export default function JournalScreen() {
@@ -48,7 +73,7 @@ export default function JournalScreen() {
     <Screen padding={false} style={{ backgroundColor: colors.background }}>
       <LinearGradient colors={['#E0F2FE50', colors.background]} style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={[styles.backArrow, { color: '#0284C7' }]}>←</Text>
+          <IconArrowLeft size={24} color="#0284C7" />
         </Pressable>
         <View style={styles.headerRow}>
           <Text style={[styles.title, { color: colors.text.primary }]}>Journal</Text>
@@ -66,7 +91,7 @@ export default function JournalScreen() {
 
       {entries.length === 0 && !isLoading ? (
         <EmptyState
-          emoji="📖"
+          icon={<IconBook size={48} color={COLORS.primary[400]} />}
           title="Your journal awaits"
           body="Write about how you're feeling, track patterns, and reflect on your wellness journey."
           action="Write first entry"

@@ -233,84 +233,87 @@ export const navigationTheme = {
 };
 
 // ─── Cycle Phase Config ───────────────────────────────────────────────────────
+// icon: plain string key — rendered by PhaseIcon() in your screen components
 export const CYCLE_PHASES = {
   menstrual: {
     label: 'Period',
     color: COLORS.period,
     gradient: ['#FFB8CC', '#FF6B95'],
-    icon: '🌸',
+    icon: 'menstrual',
     description: 'Your period days',
   },
   follicular: {
     label: 'Rising',
     color: COLORS.follicular,
     gradient: ['#BAE6FD', '#7DD3FC'],
-    icon: '🌱',
+    icon: 'follicular',
     description: 'Energy returning',
   },
   ovulation: {
     label: 'Peak',
     color: COLORS.ovulation,
     gradient: ['#FEF08A', '#FCD34D'],
-    icon: '✨',
+    icon: 'ovulation',
     description: 'Ovulation window',
   },
   luteal: {
     label: 'Luteal',
     color: '#C084FC',
     gradient: ['#DDD6FE', '#C4B5FD'],
-    icon: '🌙',
+    icon: 'luteal',
     description: 'Wind-down phase',
   },
   pms: {
     label: 'PMS',
     color: COLORS.pms,
     gradient: ['#EDE9FE', '#C4B5FD'],
-    icon: '🌫️',
+    icon: 'pms',
     description: 'Pre-period days',
   },
 };
 
 // ─── Symptom Config ───────────────────────────────────────────────────────────
+// icon: plain string key — rendered by SymptomIcon() in AnalyticsScreen
 export const SYMPTOMS_CONFIG = {
-  cramps: { label: 'Cramps', icon: '⚡', color: '#F87171' },
-  headache: { label: 'Headache', icon: '💫', color: '#FB923C' },
-  bloating: { label: 'Bloating', icon: '💨', color: '#FBBF24' },
-  acne: { label: 'Acne', icon: '🌸', color: '#F472B6' },
-  fatigue: { label: 'Fatigue', icon: '😴', color: '#A78BFA' },
-  nausea: { label: 'Nausea', icon: '🌊', color: '#34D399' },
-  back_pain: { label: 'Back Pain', icon: '🦴', color: '#60A5FA' },
-  mood_swings: { label: 'Mood Swings', icon: '🎭', color: '#F59E0B' },
-  breast_tenderness: { label: 'Breast Tenderness', icon: '💗', color: '#EC4899' },
-  insomnia: { label: 'Insomnia', icon: '🌙', color: '#818CF8' },
-  hot_flashes: { label: 'Hot Flashes', icon: '🔥', color: '#EF4444' },
-  dizziness: { label: 'Dizziness', icon: '🌀', color: '#06B6D4' },
-  appetite_changes: { label: 'Appetite', icon: '🍽️', color: '#10B981' },
-  joint_pain: { label: 'Joint Pain', icon: '🦴', color: '#6366F1' },
-  digestive_issues: { label: 'Digestive', icon: '🌿', color: '#84CC16' },
+  cramps:             { label: 'Cramps',            icon: 'cramps',            color: '#F87171' },
+  headache:           { label: 'Headache',          icon: 'headache',          color: '#FB923C' },
+  bloating:           { label: 'Bloating',          icon: 'bloating',          color: '#FBBF24' },
+  acne:               { label: 'Acne',              icon: 'acne',              color: '#F472B6' },
+  fatigue:            { label: 'Fatigue',           icon: 'fatigue',           color: '#A78BFA' },
+  nausea:             { label: 'Nausea',            icon: 'nausea',            color: '#34D399' },
+  back_pain:          { label: 'Back Pain',         icon: 'back_pain',         color: '#60A5FA' },
+  mood_swings:        { label: 'Mood Swings',       icon: 'mood_swings',       color: '#F59E0B' },
+  breast_tenderness:  { label: 'Breast Tenderness', icon: 'breast_tenderness', color: '#EC4899' },
+  insomnia:           { label: 'Insomnia',          icon: 'insomnia',          color: '#818CF8' },
+  hot_flashes:        { label: 'Hot Flashes',       icon: 'hot_flashes',       color: '#EF4444' },
+  dizziness:          { label: 'Dizziness',         icon: 'dizziness',         color: '#06B6D4' },
+  appetite_changes:   { label: 'Appetite',          icon: 'appetite_changes',  color: '#10B981' },
+  joint_pain:         { label: 'Joint Pain',        icon: 'joint_pain',        color: '#6366F1' },
+  digestive_issues:   { label: 'Digestive',         icon: 'digestive_issues',  color: '#84CC16' },
 };
 
 // ─── Mood Config ──────────────────────────────────────────────────────────────
+// emoji field renamed to icon, value is plain string key — rendered by MoodIcon() in AnalyticsScreen
 export const MOODS_CONFIG = {
-  happy: { label: 'Happy', emoji: '😊', color: '#FCD34D' },
-  calm: { label: 'Calm', emoji: '😌', color: '#86EFAC' },
-  sad: { label: 'Sad', emoji: '😢', color: '#93C5FD' },
-  anxious: { label: 'Anxious', emoji: '😰', color: '#FCA5A5' },
-  irritable: { label: 'Irritable', emoji: '😠', color: '#F87171' },
-  energetic: { label: 'Energetic', emoji: '⚡', color: '#FDE68A' },
-  tired: { label: 'Tired', emoji: '😪', color: '#C4B5FD' },
-  emotional: { label: 'Emotional', emoji: '🥺', color: '#FBCFE8' },
-  focused: { label: 'Focused', emoji: '🎯', color: '#6EE7B7' },
-  hopeful: { label: 'Hopeful', emoji: '🌈', color: '#BAE6FD' },
-  overwhelmed: { label: 'Overwhelmed', emoji: '😵', color: '#DDD6FE' },
-  content: { label: 'Content', emoji: '🥰', color: '#FDE68A' },
+  happy:       { label: 'Happy',       icon: 'happy',       color: '#FCD34D' },
+  calm:        { label: 'Calm',        icon: 'calm',        color: '#86EFAC' },
+  sad:         { label: 'Sad',         icon: 'sad',         color: '#93C5FD' },
+  anxious:     { label: 'Anxious',     icon: 'anxious',     color: '#FCA5A5' },
+  irritable:   { label: 'Irritable',   icon: 'irritable',   color: '#F87171' },
+  energetic:   { label: 'Energetic',   icon: 'energetic',   color: '#FDE68A' },
+  tired:       { label: 'Tired',       icon: 'tired',       color: '#C4B5FD' },
+  emotional:   { label: 'Emotional',   icon: 'emotional',   color: '#FBCFE8' },
+  focused:     { label: 'Focused',     icon: 'focused',     color: '#6EE7B7' },
+  hopeful:     { label: 'Hopeful',     icon: 'hopeful',     color: '#BAE6FD' },
+  overwhelmed: { label: 'Overwhelmed', icon: 'overwhelmed', color: '#DDD6FE' },
+  content:     { label: 'Content',     icon: 'content',     color: '#FDE68A' },
 };
 
 // ─── Flow Config ──────────────────────────────────────────────────────────────
 export const FLOW_CONFIG = {
-  spotting: { label: 'Spotting', dots: 1, color: '#FBCFE8' },
-  light: { label: 'Light', dots: 2, color: '#F9A8D4' },
-  medium: { label: 'Medium', dots: 3, color: '#F472B6' },
-  heavy: { label: 'Heavy', dots: 4, color: '#E84B7A' },
-  very_heavy: { label: 'Very Heavy', dots: 5, color: '#BE185D' },
+  spotting:   { label: 'Spotting',    dots: 1, color: '#FBCFE8' },
+  light:      { label: 'Light',       dots: 2, color: '#F9A8D4' },
+  medium:     { label: 'Medium',      dots: 3, color: '#F472B6' },
+  heavy:      { label: 'Heavy',       dots: 4, color: '#E84B7A' },
+  very_heavy: { label: 'Very Heavy',  dots: 5, color: '#BE185D' },
 };

@@ -9,12 +9,22 @@ import {
   ViewStyle,
   TextStyle,
   TextInputProps,
-  ScrollView,
+  Platform,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '../../context/ThemeContext';
 import { COLORS, FONTS, FONT_SIZES, SPACING, RADIUS, SHADOWS } from '../../constants/theme';
+
+// ─── Safe haptics helper (no-op on web) ──────────────────────────────────────
+const triggerHaptic = (style: 'light' | 'medium' = 'light') => {
+  if (Platform.OS === 'web') return;
+  if (style === 'medium') {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  } else {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }
+};
 
 // ─── Button ───────────────────────────────────────────────────────────────────
 interface ButtonProps {
@@ -42,7 +52,7 @@ export function Button({
 
   const handlePress = () => {
     if (!disabled && !isLoading) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      triggerHaptic('medium');
       onPress();
     }
   };
@@ -175,7 +185,7 @@ export function Card({ children, style, onPress, gradient, padding = SPACING[4] 
     return (
       <Pressable
         onPress={() => {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          triggerHaptic('light');
           onPress();
         }}
         style={({ pressed }) => [cardBase, { opacity: pressed ? 0.9 : 1 }]}
@@ -253,7 +263,7 @@ export function Chip({ label, selected, onPress, color = COLORS.primary[500], si
     <Pressable
       onPress={() => {
         if (onPress) {
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          triggerHaptic('light');
           onPress();
         }
       }}
@@ -313,7 +323,8 @@ export function EmptyState({
   action,
   onAction,
 }: {
-  emoji: string;
+  emoji?: string;
+  icon?: React.ReactNode;
   title: string;
   body: string;
   action?: string;
@@ -323,7 +334,7 @@ export function EmptyState({
 
   return (
     <View style={styles.emptyState}>
-      <Text style={styles.emptyEmoji}>{emoji}</Text>
+      {emoji && <Text style={styles.emptyEmoji}>{emoji}</Text>}
       <Text style={[styles.emptyTitle, { color: colors.text.primary }]}>{title}</Text>
       <Text style={[styles.emptyBody, { color: colors.text.secondary }]}>{body}</Text>
       {action && onAction && (

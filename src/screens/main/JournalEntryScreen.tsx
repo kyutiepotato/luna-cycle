@@ -10,6 +10,17 @@ import { db } from '../../lib/supabase';
 import { Button } from '../../components/common/UIComponents';
 import { COLORS, FONTS, FONT_SIZES, SPACING, RADIUS, MOODS_CONFIG } from '../../constants/theme';
 import { MoodType } from '../../types';
+import Svg, { Path, Circle, Rect, Line, Polyline } from 'react-native-svg';
+
+// ─── Safe haptics helper (no-op on web) ──────────────────────────────────────
+const triggerHaptic = (style: 'light' | 'success' = 'light') => {
+  if (Platform.OS === 'web') return;
+  if (style === 'success') {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  } else {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }
+};
 
 const WRITING_PROMPTS = [
   "How does your body feel today?",
@@ -19,6 +30,105 @@ const WRITING_PROMPTS = [
   "How has your energy been this week?",
   "What would feel nurturing to you today?",
 ];
+
+// ─── SVG Icons ────────────────────────────────────────────────────────────────
+
+function IconArrowLeft({ size = 24, color = '#0284C7' }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M19 12H5" stroke={color} strokeWidth="2" strokeLinecap="round" />
+      <Path d="M12 5l-7 7 7 7" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+function IconBubble({ size = 16, color = '#C084A0' }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
+        fill={color} stroke={color} strokeWidth="1" strokeLinejoin="round" />
+      <Line x1="8" y1="9" x2="16" y2="9" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+      <Line x1="8" y1="13" x2="13" y2="13" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.7" />
+    </Svg>
+  );
+}
+
+function IconX({ size = 10, color = '#E84B7A' }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M18 6L6 18M6 6l12 12" stroke={color} strokeWidth="2.5" strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+// ─── Mood SVG icons ───────────────────────────────────────────────────────────
+
+function MoodFace({ moodKey, size = 18, color = '#C084A0' }: { moodKey: string; size?: number; color?: string }) {
+  switch (moodKey) {
+    case 'sad':
+    case 'overwhelmed':
+    case 'emotional':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+          <Circle cx="12" cy="12" r="9" stroke={color} strokeWidth="1.5" fill="none" />
+          <Circle cx="9" cy="10" r="1" fill={color} />
+          <Circle cx="15" cy="10" r="1" fill={color} />
+          <Path d="M8.5 15.5 Q12 12 15.5 15.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none" />
+        </Svg>
+      );
+    case 'anxious':
+    case 'stressed':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+          <Circle cx="12" cy="12" r="9" stroke={color} strokeWidth="1.5" fill="none" />
+          <Path d="M8 9.5 Q9 8 10 9.5" stroke={color} strokeWidth="1.2" strokeLinecap="round" fill="none" />
+          <Path d="M14 9.5 Q15 8 16 9.5" stroke={color} strokeWidth="1.2" strokeLinecap="round" fill="none" />
+          <Path d="M9 14.5 Q12 13 15 14.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none" />
+        </Svg>
+      );
+    case 'irritable':
+    case 'angry':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+          <Circle cx="12" cy="12" r="9" stroke={color} strokeWidth="1.5" fill="none" />
+          <Path d="M8 8.5 L10 10" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+          <Path d="M16 8.5 L14 10" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+          <Circle cx="9" cy="11" r="1" fill={color} />
+          <Circle cx="15" cy="11" r="1" fill={color} />
+          <Path d="M8.5 15.5 Q12 12 15.5 15.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none" />
+        </Svg>
+      );
+    case 'energetic':
+    case 'excited':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+          <Path d="M12 2 L13.5 9 L20 12 L13.5 15 L12 22 L10.5 15 L4 12 L10.5 9 Z" fill={color} />
+        </Svg>
+      );
+    case 'calm':
+    case 'focused':
+    case 'neutral':
+      return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+          <Circle cx="12" cy="12" r="9" stroke={color} strokeWidth="1.5" fill="none" />
+          <Circle cx="9" cy="10" r="1" fill={color} />
+          <Circle cx="15" cy="10" r="1" fill={color} />
+          <Line x1="9" y1="14" x2="15" y2="14" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+        </Svg>
+      );
+    default: // happy, content, hopeful, tired
+      return (
+        <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+          <Circle cx="12" cy="12" r="9" stroke={color} strokeWidth="1.5" fill="none" />
+          <Circle cx="9" cy="10" r="1" fill={color} />
+          <Circle cx="15" cy="10" r="1" fill={color} />
+          <Path d="M8.5 14.5 Q12 18 15.5 14.5" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none" />
+        </Svg>
+      );
+  }
+}
+
+// ─── Main Screen ──────────────────────────────────────────────────────────────
 
 export default function JournalEntryScreen() {
   const navigation = useNavigation<any>();
@@ -63,7 +173,7 @@ export default function JournalEntryScreen() {
           mood: selectedMood, tags,
         });
       }
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      triggerHaptic('success');
       navigation.goBack();
     } catch (e) {
       Alert.alert('Error', 'Failed to save entry.');
@@ -83,7 +193,7 @@ export default function JournalEntryScreen() {
       <ScrollView style={[{ flex: 1, backgroundColor: colors.background }]} showsVerticalScrollIndicator={false}>
         <LinearGradient colors={['#E0F2FE50', colors.background]} style={styles.header}>
           <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
-            <Text style={[styles.backArrow, { color: '#0284C7' }]}>←</Text>
+            <IconArrowLeft size={24} color="#0284C7" />
           </Pressable>
           <View style={styles.headerRow}>
             <Text style={[styles.title, { color: colors.text.primary }]}>
@@ -106,7 +216,7 @@ export default function JournalEntryScreen() {
                 <Pressable
                   key={mood}
                   onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+                    triggerHaptic('light');
                     setSelectedMood(isSelected ? null : mood);
                   }}
                   style={[
@@ -117,7 +227,7 @@ export default function JournalEntryScreen() {
                     },
                   ]}
                 >
-                  <Text style={{ fontSize: 16 }}>{config.emoji}</Text>
+                  <MoodFace moodKey={mood} size={16} color={config.color} />
                   <Text style={[styles.moodChipLabel, { color: isSelected ? '#3A302A' : colors.text.secondary }]}>
                     {config.label}
                   </Text>
@@ -132,7 +242,7 @@ export default function JournalEntryScreen() {
               onPress={() => setContent(prompt + '\n\n')}
               style={[styles.promptCard, { backgroundColor: COLORS.primary[50], borderColor: COLORS.primary[200] }]}
             >
-              <Text style={{ fontSize: 16 }}>💭</Text>
+              <IconBubble size={16} color={COLORS.primary[400]} />
               <Text style={[styles.promptText, { color: COLORS.primary[600] }]}>{prompt}</Text>
               <Text style={[styles.promptHint, { color: COLORS.primary[400] }]}>Tap to use this prompt</Text>
             </Pressable>
@@ -165,7 +275,8 @@ export default function JournalEntryScreen() {
                 onPress={() => setTags(t => t.filter(x => x !== tag))}
                 style={[styles.tagChip, { backgroundColor: COLORS.primary[50], borderColor: COLORS.primary[200] }]}
               >
-                <Text style={[styles.tagChipText, { color: COLORS.primary[600] }]}>#{tag} ×</Text>
+                <Text style={[styles.tagChipText, { color: COLORS.primary[600] }]}>#{tag}</Text>
+                <IconX size={10} color={COLORS.primary[400]} />
               </Pressable>
             ))}
             <View style={[styles.tagInput, { backgroundColor: colors.surfaceTertiary, borderColor: colors.border }]}>
@@ -197,7 +308,6 @@ export default function JournalEntryScreen() {
 const styles = StyleSheet.create({
   header: { paddingTop: 60, paddingHorizontal: SPACING[5], paddingBottom: SPACING[4] },
   backBtn: { marginBottom: SPACING[3] },
-  backArrow: { fontSize: 24 },
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline' },
   title: { fontFamily: FONTS.display.semiBold, fontSize: FONT_SIZES['3xl'] },
   date: { fontFamily: FONTS.body.regular, fontSize: FONT_SIZES.sm },
@@ -213,7 +323,7 @@ const styles = StyleSheet.create({
   editor: { fontFamily: FONTS.body.regular, fontSize: FONT_SIZES.md, lineHeight: 26, minHeight: 200 },
   wordCount: { fontFamily: FONTS.body.regular, fontSize: FONT_SIZES.xs, textAlign: 'right', marginTop: SPACING[1] },
   tagsRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginBottom: SPACING[5] },
-  tagChip: { paddingHorizontal: 10, paddingVertical: 5, borderRadius: RADIUS.full, borderWidth: 1 },
+  tagChip: { flexDirection: 'row', alignItems: 'center', gap: 4, paddingHorizontal: 10, paddingVertical: 5, borderRadius: RADIUS.full, borderWidth: 1 },
   tagChipText: { fontFamily: FONTS.body.medium, fontSize: FONT_SIZES.xs },
   tagInput: { paddingHorizontal: 12, paddingVertical: 5, borderRadius: RADIUS.full, borderWidth: 1, minWidth: 100 },
   tagInputText: { fontFamily: FONTS.body.regular, fontSize: FONT_SIZES.xs },

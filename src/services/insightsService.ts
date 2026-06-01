@@ -32,14 +32,13 @@ export function generateInsights(data: InsightData): SmartInsight[] {
     const phase = data.prediction.cycle_phase;
     const days = data.prediction.days_until_period;
 
-    // Phase-based nutrition tips
     if (phase === 'menstrual') {
       insights.push({
         id: 'phase-nutrition-menstrual',
         type: 'tip',
         title: 'Nourish your body',
-        body: 'During your period, focus on iron-rich foods like leafy greens and legumes to replenish what\'s lost. Warm soups and herbal teas can help ease cramps.',
-        icon: '🥗',
+        body: "During your period, focus on iron-rich foods like leafy greens and legumes to replenish what's lost. Warm soups and herbal teas can help ease cramps.",
+        icon: 'wellness',
         color: '#FF6B95',
       });
     }
@@ -49,8 +48,8 @@ export function generateInsights(data: InsightData): SmartInsight[] {
         id: 'phase-energy-follicular',
         type: 'tip',
         title: 'Harness rising energy',
-        body: 'Estrogen is climbing — this is your most energetic phase. Great time for new projects, social plans, and higher-intensity workouts.',
-        icon: '⚡',
+        body: 'Estrogen is climbing - this is your most energetic phase. Great time for new projects, social plans, and higher-intensity workouts.',
+        icon: 'exercise',
         color: '#60A5FA',
       });
     }
@@ -60,8 +59,8 @@ export function generateInsights(data: InsightData): SmartInsight[] {
         id: 'phase-peak-ovulation',
         type: 'tip',
         title: 'Peak performance window',
-        body: 'You\'re at your peak cognitively and physically. Communication comes naturally now — schedule important conversations or presentations.',
-        icon: '✨',
+        body: "You're at your peak cognitively and physically. Communication comes naturally now - schedule important conversations or presentations.",
+        icon: 'ovulation',
         color: '#FCD34D',
       });
     }
@@ -72,46 +71,43 @@ export function generateInsights(data: InsightData): SmartInsight[] {
         type: 'tip',
         title: 'Prioritize self-care',
         body: 'Progesterone is high. Reducing caffeine, adding magnesium-rich foods (dark chocolate, almonds), and gentle movement can ease PMS symptoms.',
-        icon: '💆‍♀️',
+        icon: 'mood',
         color: '#C4B5FD',
       });
     }
 
-    // Period approaching warning
     if (days > 0 && days <= 3) {
       insights.push({
         id: 'period-approaching',
         type: 'warning',
         title: `Period in ${days} day${days > 1 ? 's' : ''}`,
         body: 'Stock up on supplies and plan for comfort. Consider light exercise, heat packs, and extra rest for the coming days.',
-        icon: '🩷',
+        icon: 'period',
         color: '#FB923C',
         actionLabel: 'Prepare checklist',
       });
     }
 
-    // Confidence note for irregular cycles
     if (data.prediction.is_irregular) {
       insights.push({
         id: 'irregular-cycle-note',
         type: 'pattern',
         title: 'Irregular cycle detected',
-        body: `Your cycles vary more than average. Tracking consistently over 3–6 more cycles will help improve predictions. Stress, diet, and lifestyle can all affect regularity.`,
-        icon: '📊',
+        body: 'Your cycles vary more than average. Tracking consistently over 3-6 more cycles will help improve predictions. Stress, diet, and lifestyle can all affect regularity.',
+        icon: 'chart',
         color: '#A78BFA',
       });
     }
   }
 
-  // Stats-based insights
   if (data.stats) {
     if (data.stats.cycles_tracked >= 3) {
       insights.push({
         id: 'cycles-tracked-milestone',
         type: 'celebration',
         title: `${data.stats.cycles_tracked} cycles tracked!`,
-        body: 'Wonderful consistency. Your predictions are becoming more accurate with every cycle you log. Keep going! 🌸',
-        icon: '🎉',
+        body: 'Wonderful consistency. Your predictions are becoming more accurate with every cycle you log. Keep going!',
+        icon: 'cycle',
         color: '#4ADE80',
       });
     }
@@ -122,21 +118,20 @@ export function generateInsights(data: InsightData): SmartInsight[] {
         type: 'celebration',
         title: 'Beautifully regular cycle',
         body: `Your average cycle is ${data.stats.average_length} days with great consistency. This is a positive sign of hormonal balance.`,
-        icon: '💚',
+        icon: 'cycle',
         color: '#4ADE80',
       });
     }
   }
 
-  // Wellness insights
   if (data.wellnessData) {
     if (data.wellnessData.avgSleep && data.wellnessData.avgSleep < 7) {
       insights.push({
         id: 'sleep-low',
         type: 'warning',
         title: 'Sleep may be affecting your cycle',
-        body: 'You\'re averaging under 7 hours. Poor sleep disrupts hormones that regulate your cycle. Aim for 7–9 hours for better hormonal balance.',
-        icon: '😴',
+        body: "You're averaging under 7 hours. Poor sleep disrupts hormones that regulate your cycle. Aim for 7-9 hours for better hormonal balance.",
+        icon: 'sleep',
         color: '#818CF8',
         actionLabel: 'Sleep tips',
       });
@@ -148,14 +143,13 @@ export function generateInsights(data: InsightData): SmartInsight[] {
         type: 'tip',
         title: 'Stay hydrated',
         body: 'Proper hydration reduces bloating and cramps. Aim for 8 glasses daily, especially during your period and the days before.',
-        icon: '💧',
+        icon: 'water',
         color: '#60A5FA',
         actionLabel: 'Track water',
       });
     }
   }
 
-  // Symptom pattern insights
   if (data.recentSymptoms && data.recentSymptoms.length > 0) {
     const symptomCounts = data.recentSymptoms.reduce((acc, s) => {
       acc[s] = (acc[s] || 0) + 1;
@@ -179,31 +173,30 @@ export function generateInsights(data: InsightData): SmartInsight[] {
           type: 'pattern',
           title: `Pattern: frequent ${topSymptom[0].replace('_', ' ')}`,
           body: tip,
-          icon: '🔍',
+          icon: 'symptom',
           color: '#F59E0B',
         });
       }
     }
   }
 
-  // Monthly wellness summary
   insights.push({
     id: 'monthly-wellness-check',
     type: 'wellness',
     title: 'Monthly wellness summary',
-    body: 'You\'re building valuable health data. The more consistently you track, the better Luna can support your wellbeing with personalized insights.',
-    icon: '📋',
+    body: "You're building valuable health data. The more consistently you track, the better Luna can support your wellbeing with personalized insights.",
+    icon: 'chart',
     color: '#EC4899',
     actionLabel: 'View analytics',
   });
 
-  return insights.slice(0, 5); // Return top 5 most relevant
+  return insights.slice(0, 5);
 }
 
 export function getDailyAffirmation(phase?: string): string {
   const affirmations: Record<string, string[]> = {
     menstrual: [
-      'Your body is doing something remarkable. Rest is not laziness — it\'s wisdom.',
+      "Your body is doing something remarkable. Rest is not laziness - it's wisdom.",
       'You are allowed to slow down. Ease and softness are your guides today.',
       'This is a time of release and renewal. Honor what your body needs.',
     ],
@@ -214,11 +207,11 @@ export function getDailyAffirmation(phase?: string): string {
     ],
     ovulation: [
       'You radiate warmth and connection. The world benefits from your presence.',
-      'At your most vibrant — share your light generously today.',
+      'At your most vibrant - share your light generously today.',
       'Trust your instincts. Your intuition is especially clear right now.',
     ],
     luteal: [
-      'Your sensitivity is a gift. It\'s okay to feel deeply.',
+      "Your sensitivity is a gift. It's okay to feel deeply.",
       'This is a time for completion and reflection. What needs to close?',
       'Nourish yourself with what truly restores you.',
     ],

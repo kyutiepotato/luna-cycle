@@ -25,16 +25,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true);
 
   const loadProfile = useCallback(async (userId: string) => {
-    try {
-      const { data } = await db.profiles()
-        .select('*')
-        .eq('user_id', userId)
+  try {
+    let { data } = await db.profiles()
+      .select('*')
+      .eq('user_id', userId)
+      .single();
+
+    // If no profile exists, create one
+    if (!data) {
+      const { data: newProfile } = await db.profiles()
+        .insert({
+          user_id: userId,
+          name: user?.email?.split('@')[0] || 'Luna User',
+          average_cycle_length: 28,
+          average_period_length: 5,
+        })
+        .select()
         .single();
-      setProfile(data);
-    } catch (e) {
-      console.log('Profile load error:', e);
+      data = newProfile;
     }
-  }, []);
+
+    setProfile(data);
+  } catch (e) {
+    console.log('Profile load error:', e);
+  }
+}, []);
 
   useEffect(() => {
     // Get initial session

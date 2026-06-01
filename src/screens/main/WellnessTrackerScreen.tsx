@@ -9,6 +9,76 @@ import { useTheme } from '../../context/ThemeContext';
 import { Screen } from '../../components/common/Screen';
 import { Button } from '../../components/common/UIComponents';
 import { COLORS, FONTS, FONT_SIZES, SPACING, RADIUS } from '../../constants/theme';
+import Svg, { Path, Circle, Line, Rect, Polyline } from 'react-native-svg';
+
+// ─── SVG Icons ─────────────────────────────────────────────────────────────────
+
+/** Left arrow — back button */
+function IconArrowLeft({ size = 24, color = '#059669' }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M19 12H5" stroke={color} strokeWidth="2" strokeLinecap="round" />
+      <Path d="M12 5l-7 7 7 7" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+/** Moon — sleep */
+function IconMoon({ size = 26, color = '#818CF8' }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" fill={color} />
+      <Circle cx="17" cy="5" r="1.2" fill={color} opacity="0.5" />
+      <Circle cx="20" cy="8" r="0.8" fill={color} opacity="0.4" />
+    </Svg>
+  );
+}
+
+/** Water drop — water intake */
+function IconWater({ size = 26, color = '#60A5FA' }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M12 2C12 2 5 10 5 15a7 7 0 0 0 14 0C19 10 12 2 12 2z" fill={color} />
+      <Path d="M9 15 Q10 18 12 18" stroke="white" strokeWidth="1.2" strokeLinecap="round" opacity="0.5" fill="none" />
+    </Svg>
+  );
+}
+
+/** Runner — exercise */
+function IconRunner({ size = 26, color = '#4ADE80' }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="14" cy="4" r="2" fill={color} />
+      <Path d="M6 20l4-6 3 3 3-5" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+      <Path d="M11 9l2 4 4 1 2-4" stroke={color} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </Svg>
+  );
+}
+
+/** Thermometer — temperature */
+function IconThermometer({ size = 26, color = '#E11D48' }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M14 14.76V3.5a2.5 2.5 0 0 0-5 0v11.26a4.5 4.5 0 1 0 5 0z"
+        stroke={color} strokeWidth="1.5" fill="none" strokeLinejoin="round" />
+      <Circle cx="11.5" cy="18.5" r="2.5" fill={color} opacity="0.8" />
+      <Line x1="11.5" y1="16" x2="11.5" y2="10" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+    </Svg>
+  );
+}
+
+// ─── Icon map for WellnessSlider ──────────────────────────────────────────────
+
+function SliderIcon({ id, size = 26, color }: { id: string; size?: number; color: string }) {
+  switch (id) {
+    case 'sleep':    return <IconMoon size={size} color={color} />;
+    case 'water':    return <IconWater size={size} color={color} />;
+    case 'exercise': return <IconRunner size={size} color={color} />;
+    default:         return null;
+  }
+}
+
+// ─── Main Screen ───────────────────────────────────────────────────────────────
 
 export default function WellnessTrackerScreen() {
   const navigation = useNavigation();
@@ -54,7 +124,7 @@ export default function WellnessTrackerScreen() {
     <Screen scroll padding={false} style={{ backgroundColor: colors.background }}>
       <LinearGradient colors={['#D1FAE5', colors.background]} style={styles.header}>
         <Pressable onPress={() => navigation.goBack()} style={styles.backBtn}>
-          <Text style={[styles.backArrow, { color: '#059669' }]}>←</Text>
+          <IconArrowLeft size={24} color="#059669" />
         </Pressable>
         <Text style={[styles.title, { color: colors.text.primary }]}>Wellness</Text>
         <Text style={[styles.date, { color: colors.text.secondary }]}>{format(new Date(date), 'MMMM d')}</Text>
@@ -63,21 +133,21 @@ export default function WellnessTrackerScreen() {
       <View style={styles.body}>
         {/* Sleep */}
         <WellnessSlider
-          icon="😴" label="Sleep" value={sleep} min={0} max={12} step={0.5} unit="hours"
+          iconId="sleep" label="Sleep" value={sleep} min={0} max={12} step={0.5} unit="hours"
           color="#818CF8" onChange={setSleep}
           hint={sleep < 6 ? 'Below recommended' : sleep >= 8 ? 'Great!' : 'Almost there'}
         />
 
         {/* Water */}
         <WellnessSlider
-          icon="💧" label="Water intake" value={water} min={0} max={16} step={1} unit="glasses"
+          iconId="water" label="Water intake" value={water} min={0} max={16} step={1} unit="glasses"
           color="#60A5FA" onChange={setWater}
           hint={water < 6 ? 'Drink more water' : water >= 8 ? 'Well hydrated!' : 'Keep going'}
         />
 
         {/* Exercise */}
         <WellnessSlider
-          icon="🏃‍♀️" label="Exercise" value={exercise} min={0} max={120} step={5} unit="minutes"
+          iconId="exercise" label="Exercise" value={exercise} min={0} max={120} step={5} unit="minutes"
           color="#4ADE80" onChange={setExercise}
           hint={exercise === 0 ? 'Even a short walk counts' : exercise >= 30 ? 'Great movement!' : 'Nice!'}
         />
@@ -85,7 +155,7 @@ export default function WellnessTrackerScreen() {
         {/* Temperature */}
         <View style={[styles.tempCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
           <View style={styles.tempHeader}>
-            <Text style={styles.tempIcon}>🌡️</Text>
+            <IconThermometer size={26} color="#E11D48" />
             <View>
               <Text style={[styles.wellnessLabel, { color: colors.text.primary }]}>Basal body temperature</Text>
               <Text style={[styles.wellnessHint, { color: colors.text.tertiary }]}>Optional — helps track ovulation</Text>
@@ -110,13 +180,12 @@ export default function WellnessTrackerScreen() {
   );
 }
 
-function WellnessSlider({ icon, label, value, min, max, step, unit, color, onChange, hint }: {
-  icon: string; label: string; value: number; min: number; max: number;
+function WellnessSlider({ iconId, label, value, min, max, step, unit, color, onChange, hint }: {
+  iconId: string; label: string; value: number; min: number; max: number;
   step: number; unit: string; color: string; onChange: (v: number) => void; hint: string;
 }) {
   const { colors } = useTheme();
   const percentage = ((value - min) / (max - min)) * 100;
-  const steps = Math.round((max - min) / step);
 
   const decrement = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
@@ -130,10 +199,12 @@ function WellnessSlider({ icon, label, value, min, max, step, unit, color, onCha
   return (
     <View style={[styles.wellnessCard, { backgroundColor: colors.surface, borderColor: colors.border }]}>
       <View style={styles.wellnessHeader}>
-        <Text style={styles.wellnessIcon}>{icon}</Text>
+        <View style={styles.wellnessIcon}>
+          <SliderIcon id={iconId} size={26} color={color} />
+        </View>
         <View style={styles.wellnessInfo}>
           <Text style={[styles.wellnessLabel, { color: colors.text.primary }]}>{label}</Text>
-          <Text style={[styles.wellnessHint, { color: color }]}>{hint}</Text>
+          <Text style={[styles.wellnessHint, { color }]}>{hint}</Text>
         </View>
         <Text style={[styles.wellnessValue, { color }]}>{value} <Text style={styles.wellnessUnit}>{unit}</Text></Text>
       </View>
@@ -161,7 +232,7 @@ const styles = StyleSheet.create({
   body: { paddingHorizontal: SPACING[5] },
   wellnessCard: { borderRadius: RADIUS.xl, borderWidth: 1, padding: SPACING[4], marginBottom: SPACING[3] },
   wellnessHeader: { flexDirection: 'row', alignItems: 'center', gap: SPACING[3], marginBottom: SPACING[3] },
-  wellnessIcon: { fontSize: 26 },
+  wellnessIcon: { alignItems: 'center', justifyContent: 'center' },
   wellnessInfo: { flex: 1 },
   wellnessLabel: { fontFamily: FONTS.body.medium, fontSize: FONT_SIZES.base },
   wellnessHint: { fontFamily: FONTS.body.regular, fontSize: FONT_SIZES.xs },

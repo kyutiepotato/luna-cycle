@@ -1,11 +1,43 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, Pressable, Alert } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation } from '@react-navigation/native';
 import { useAuth } from '../../context/AuthContext';
 import { useTheme } from '../../context/ThemeContext';
 import { Button, Input } from '../../components/common/UIComponents';
-import { COLORS, FONTS, FONT_SIZES, SPACING } from '../../constants/theme';
+import { COLORS, FONTS, FONT_SIZES, SPACING, RADIUS } from '../../constants/theme';
+import Svg, { Path, Circle, Rect, Line } from 'react-native-svg';
+
+function IconArrowLeft({ size = 24, color = '#E84B7A' }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Path d="M19 12H5M5 12l7-7M5 12l7 7"
+        stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+function IconMailSent({ size = 52, color = '#E84B7A' }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Rect x="2" y="4" width="20" height="16" rx="3"
+        stroke={color} strokeWidth="1.5" fill="none" />
+      <Path d="M2 7l10 7 10-7" stroke={color} strokeWidth="1.5" strokeLinecap="round" fill="none" />
+      <Line x1="16" y1="17" x2="20" y2="17" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+      <Path d="M18 15l2 2-2 2" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+    </Svg>
+  );
+}
+
+function IconKey({ size = 52, color = '#E84B7A' }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="8" cy="10" r="5" stroke={color} strokeWidth="1.5" fill="none" />
+      <Path d="M13 10h8M18 10v3" stroke={color} strokeWidth="1.5" strokeLinecap="round" />
+      <Circle cx="8" cy="10" r="2" fill={color} opacity="0.4" />
+    </Svg>
+  );
+}
 
 export default function ForgotPasswordScreen() {
   const navigation = useNavigation();
@@ -13,39 +45,41 @@ export default function ForgotPasswordScreen() {
   const { colors } = useTheme();
   const [email, setEmail] = useState('');
   const [sent, setSent] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSend = async () => {
-    if (!email.trim()) return;
-    setLoading(true);
+    if (!email.trim()) { Alert.alert('Enter email', 'Please enter your email address.'); return; }
+    setIsLoading(true);
     try {
       await forgotPassword(email.trim().toLowerCase());
       setSent(true);
     } catch (e: any) {
-      Alert.alert('Error', e.message || 'Failed to send reset email');
+      Alert.alert('Error', e.message || 'Please try again.');
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
   return (
-    <LinearGradient colors={['#FFF5F7', '#FDF9F7']} style={styles.container}>
-      <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
-        <Text style={styles.backArrow}>←</Text>
-      </Pressable>
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+      <LinearGradient colors={['#FFF5F7', '#FDF9F7']} style={{ flex: 1, paddingHorizontal: SPACING[6], paddingTop: 60 }}>
+        <Pressable onPress={() => navigation.goBack()} style={styles.backButton}>
+          <IconArrowLeft size={24} color={COLORS.primary[500]} />
+        </Pressable>
 
-      <View style={styles.content}>
-        <Text style={styles.emoji}>{sent ? '📬' : '🔑'}</Text>
-        <Text style={[styles.title, { color: COLORS.primary[700] }]}>
-          {sent ? 'Check your email' : 'Reset password'}
-        </Text>
-        <Text style={[styles.body, { color: colors.text.secondary }]}>
-          {sent
-            ? `We've sent a reset link to ${email}. Check your inbox and follow the instructions.`
-            : "Enter your email address and we'll send you a secure link to reset your password."}
-        </Text>
+        <View style={styles.header}>
+          {sent ? <IconMailSent size={52} color={COLORS.primary[400]} /> : <IconKey size={52} color={COLORS.primary[400]} />}
+          <Text style={[styles.title, { color: COLORS.primary[700] }]}>
+            {sent ? 'Check your email' : 'Reset password'}
+          </Text>
+          <Text style={[styles.subtitle, { color: colors.text.secondary }]}>
+            {sent
+              ? `We sent a reset link to ${email}`
+              : 'Enter your email and we will send you a reset link'}
+          </Text>
+        </View>
 
-        {!sent ? (
+        {!sent && (
           <>
             <Input
               label="Email"
@@ -54,24 +88,34 @@ export default function ForgotPasswordScreen() {
               keyboardType="email-address"
               autoCapitalize="none"
               placeholder="your@email.com"
-              containerStyle={{ marginBottom: SPACING[6] }}
             />
-            <Button label="Send reset link" onPress={handleSend} isLoading={loading} size="lg" />
+            <Button
+              label="Send reset link"
+              onPress={handleSend}
+              isLoading={isLoading}
+              size="lg"
+              style={{ marginTop: SPACING[4] }}
+            />
           </>
-        ) : (
-          <Button label="Back to sign in" onPress={() => navigation.goBack()} variant="secondary" size="lg" />
         )}
-      </View>
-    </LinearGradient>
+
+        {sent && (
+          <Button
+            label="Back to sign in"
+            onPress={() => navigation.goBack()}
+            variant="secondary"
+            size="lg"
+            style={{ marginTop: SPACING[4] }}
+          />
+        )}
+      </LinearGradient>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, paddingHorizontal: SPACING[6] },
-  backButton: { marginTop: 60, marginBottom: SPACING[8] },
-  backArrow: { fontSize: 24, color: COLORS.primary[500] },
-  content: { alignItems: 'center' },
-  emoji: { fontSize: 60, marginBottom: SPACING[4] },
-  title: { fontFamily: FONTS.display.semiBold, fontSize: FONT_SIZES['3xl'], marginBottom: SPACING[3], textAlign: 'center' },
-  body: { fontFamily: FONTS.body.regular, fontSize: FONT_SIZES.base, textAlign: 'center', lineHeight: 24, marginBottom: SPACING[8] },
+  backButton: { marginBottom: SPACING[6] },
+  header: { alignItems: 'center', marginBottom: SPACING[8], gap: SPACING[3] },
+  title: { fontFamily: FONTS.display.semiBold, fontSize: FONT_SIZES['3xl'] },
+  subtitle: { fontFamily: FONTS.body.regular, fontSize: FONT_SIZES.base, textAlign: 'center', lineHeight: 22 },
 });

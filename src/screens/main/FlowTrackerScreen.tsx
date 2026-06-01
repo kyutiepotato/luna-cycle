@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Pressable, Alert, ScrollView, TextInput } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Alert, Platform } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { format } from 'date-fns';
@@ -10,6 +10,38 @@ import { Screen } from '../../components/common/Screen';
 import { Button } from '../../components/common/UIComponents';
 import { COLORS, FONTS, FONT_SIZES, SPACING, RADIUS, FLOW_CONFIG } from '../../constants/theme';
 import { FlowIntensity } from '../../types';
+import Svg, { Path, Circle, Line, Polyline } from 'react-native-svg';
+
+// ─── Safe haptics helper (no-op on web) ──────────────────────────────────────
+const triggerHaptic = (style: 'light' | 'medium' | 'success' = 'light') => {
+  if (Platform.OS === 'web') return;
+  if (style === 'success') {
+    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  } else if (style === 'medium') {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  } else {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+  }
+};
+
+// ─── SVG Icons ────────────────────────────────────────────────────────────────
+
+function IconCheck({ size = 18, color = '#FFFFFF' }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Polyline points="20,6 9,17 4,12" stroke={color} strokeWidth="2.5"
+        strokeLinecap="round" strokeLinejoin="round" />
+    </Svg>
+  );
+}
+
+function IconCircle({ size = 18, color = '#C084A0' }: { size?: number; color?: string }) {
+  return (
+    <Svg width={size} height={size} viewBox="0 0 24 24" fill="none">
+      <Circle cx="12" cy="12" r="9" stroke={color} strokeWidth="1.5" fill="none" />
+    </Svg>
+  );
+}
 
 // ─── Flow Tracker ─────────────────────────────────────────────────────────────
 export default function FlowTrackerScreen() {
@@ -35,17 +67,17 @@ export default function FlowTrackerScreen() {
     setIsSaving(true);
     try {
       await logFlow(selectedFlow, date);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      triggerHaptic('success');
       navigation.goBack();
     } catch { Alert.alert('Error', 'Failed to save.'); }
     finally { setIsSaving(false); }
   };
 
   const flows: { key: FlowIntensity; drops: number }[] = [
-    { key: 'spotting', drops: 1 },
-    { key: 'light', drops: 2 },
-    { key: 'medium', drops: 3 },
-    { key: 'heavy', drops: 4 },
+    { key: 'spotting',   drops: 1 },
+    { key: 'light',      drops: 2 },
+    { key: 'medium',     drops: 3 },
+    { key: 'heavy',      drops: 4 },
     { key: 'very_heavy', drops: 5 },
   ];
 
@@ -66,7 +98,7 @@ export default function FlowTrackerScreen() {
           return (
             <Pressable
               key={key}
-              onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium); setSelectedFlow(key); }}
+              onPress={() => { triggerHaptic('medium'); setSelectedFlow(key); }}
               style={[
                 styles.flowCard,
                 {
@@ -86,16 +118,28 @@ export default function FlowTrackerScreen() {
               <Text style={[styles.flowLabel, { color: isSelected ? config.color : colors.text.primary }]}>
                 {config.label}
               </Text>
-              {isSelected && <Text style={{ fontSize: 18 }}>✓</Text>}
+              {isSelected
+                ? <IconCheck size={18} color={config.color} />
+                : <IconCircle size={18} color={colors.border} />
+              }
             </Pressable>
           );
         })}
 
         <Pressable
-          onPress={() => { Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light); setIsSpotting(!isSpotting); }}
-          style={[styles.spottingToggle, { backgroundColor: isSpotting ? COLORS.primary[50] : colors.surfaceTertiary, borderColor: isSpotting ? COLORS.primary[400] : colors.border }]}
+          onPress={() => { triggerHaptic('light'); setIsSpotting(!isSpotting); }}
+          style={[
+            styles.spottingToggle,
+            {
+              backgroundColor: isSpotting ? COLORS.primary[50] : colors.surfaceTertiary,
+              borderColor: isSpotting ? COLORS.primary[400] : colors.border,
+            },
+          ]}
         >
-          <Text style={{ fontSize: 18 }}>{isSpotting ? '✓' : '○'}</Text>
+          {isSpotting
+            ? <IconCheck size={18} color={COLORS.primary[500]} />
+            : <IconCircle size={18} color={colors.text.tertiary} />
+          }
           <View>
             <Text style={[styles.spottingLabel, { color: colors.text.primary }]}>Log as spotting only</Text>
             <Text style={[styles.spottingHint, { color: colors.text.tertiary }]}>Not counted as a period day</Text>
